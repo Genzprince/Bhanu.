@@ -283,6 +283,29 @@ export default function App() {
               </div>
             </section>
 
+            {/* CLIENTS INFINITE SMOOTH SCROLL MARQUEE */}
+            <section className="py-10 border-t border-b border-zinc-900/60 bg-[#040404] overflow-hidden relative flex items-center select-none">
+              {/* Fade out edges for premium editorial aesthetic */}
+              <div className="absolute left-0 top-0 bottom-0 w-24 sm:w-48 bg-gradient-to-r from-[#040404] to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-24 sm:w-48 bg-gradient-to-l from-[#040404] to-transparent z-10 pointer-events-none" />
+              
+              <div className="flex animate-marquee-ltr whitespace-nowrap">
+                {Array.from({ length: 6 }).map((_, repeatIdx) => (
+                  <div key={repeatIdx} className="flex items-center gap-10 sm:gap-16 px-5 sm:px-8 shrink-0">
+                    {["Client 1", "Client 2", "Client 3", "Client 4", "Client 5", "Client 6"].map((client, idx) => (
+                      <React.Fragment key={idx}>
+                        <span className="text-zinc-600 font-sans font-black text-2xl sm:text-[34px] tracking-widest uppercase transition-all duration-300 hover:text-white hover:scale-[1.02] hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.85)] cursor-default select-none">
+                          {client}
+                        </span>
+                        {/* Orange diamond divider */}
+                        <div className="w-1.5 h-1.5 bg-accent-orange/40 rotate-45 shrink-0" />
+                      </React.Fragment>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </section>
+
             {/* PORTFOLIO ARCHIVE / EXPLORE MY WORK SECTION */}
             <section
               id="portfolio"
