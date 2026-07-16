@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Project, ProjectImages } from '../types';
 import BeforeAfterSlider from './BeforeAfterSlider';
 import { ArrowLeft, Cpu, ShieldCheck, Palette, Clock, Layers } from 'lucide-react';
@@ -12,6 +12,27 @@ interface ProjectDetailProps {
 export default function ProjectDetail({ project, onBack }: ProjectDetailProps) {
   // Preset comparison choices
   const [activePresetIndex, setActivePresetIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        const progress = (window.scrollY / totalScroll) * 100;
+        setScrollProgress(progress);
+      } else {
+        setScrollProgress(0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial calculation
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const currentPreset = project.comparisonOptions[activePresetIndex] || project.comparisonOptions[0];
 
@@ -32,15 +53,28 @@ export default function ProjectDetail({ project, onBack }: ProjectDetailProps) {
       transition={{ duration: 0.4, ease: 'easeOut' }}
       className="container mx-auto px-4 md:px-8 py-12 text-zinc-100"
     >
+      {/* High-precision viewport scroll progress bar */}
+      <div className="fixed top-0 left-0 right-0 h-[2.5px] bg-zinc-950/40 z-[100] pointer-events-none">
+        <div 
+          className="h-full bg-gradient-to-r from-accent-orange/40 via-accent-orange to-accent-orange shadow-[0_0_12px_rgba(242,125,38,0.7)] transition-all duration-75 ease-out relative"
+          style={{ width: `${scrollProgress}%` }}
+        >
+          {/* Precision laser leading target point */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,1),0_0_4px_rgba(242,125,38,1)]" />
+        </div>
+      </div>
       {/* Back button */}
-      <button
+      <motion.button
         id="back-to-portfolio-btn"
         onClick={onBack}
         className="group flex items-center gap-2 text-zinc-400 hover:text-accent-orange font-mono text-xs uppercase tracking-wider mb-8 transition-colors duration-200 cursor-pointer"
+        whileHover={{ x: -4 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15 }}
       >
         <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
         Back to Portfolio
-      </button>
+      </motion.button>
 
       {/* Main Grid: Info + Slider */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -123,7 +157,7 @@ export default function ProjectDetail({ project, onBack }: ProjectDetailProps) {
                 const thumbImage = project.images[option.right.key];
 
                 return (
-                  <button
+                  <motion.button
                     key={idx}
                     onClick={() => setActivePresetIndex(idx)}
                     className={`relative rounded-sm overflow-hidden border p-1 text-left transition-all duration-300 cursor-pointer group ${
@@ -131,6 +165,9 @@ export default function ProjectDetail({ project, onBack }: ProjectDetailProps) {
                         ? 'border-accent-orange bg-zinc-900/80 ring-1 ring-accent-orange/30'
                         : 'glass-card border-white/5 bg-zinc-950 hover:border-white/20'
                     }`}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
                   >
                     <div className="aspect-video w-full rounded-sm overflow-hidden bg-zinc-900 mb-1.5">
                       <img
@@ -143,7 +180,7 @@ export default function ProjectDetail({ project, onBack }: ProjectDetailProps) {
                     <div className="px-1 text-[10px] font-mono text-zinc-400 font-medium truncate">
                       {option.left.label} → {option.right.label}
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>

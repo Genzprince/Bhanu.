@@ -10,15 +10,15 @@ export default function SpotlightShowcase() {
       id: 'clay',
       label: 'CLAY RENDER',
       leftImg: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
-      rightImg: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=1200&q=80',
+      rightImg: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
       leftLabel: 'CLAY MODEL',
       rightLabel: 'FINAL RENDER'
     },
     {
       id: 'wireframe',
       label: 'WIREFRAME',
-      leftImg: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=1200&q=80',
-      rightImg: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=1200&q=80',
+      leftImg: 'https://images.unsplash.com/photo-1618005198143-e5283b519a7f?auto=format&fit=crop&w=1200&q=80',
+      rightImg: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
       leftLabel: 'WIREFRAME',
       rightLabel: 'FINAL RENDER'
     },
@@ -26,15 +26,15 @@ export default function SpotlightShowcase() {
       id: 'textured',
       label: 'TEXTURED',
       leftImg: 'https://images.unsplash.com/photo-1622737133809-d95047b9e673?auto=format&fit=crop&w=1200&q=80',
-      rightImg: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=1200&q=80',
+      rightImg: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
       leftLabel: 'BASE COLOR',
       rightLabel: 'FINAL RENDER'
     },
     {
       id: 'final',
       label: 'FINAL RENDER',
-      leftImg: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=1200&q=80',
-      rightImg: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=1200&q=80',
+      leftImg: 'https://images.unsplash.com/photo-1618005198143-e5283b519a7f?auto=format&fit=crop&w=1200&q=80',
+      rightImg: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
       leftLabel: 'WIREFRAME',
       rightLabel: 'FINAL RENDER'
     },
@@ -42,7 +42,7 @@ export default function SpotlightShowcase() {
       id: 'details',
       label: 'DETAILS',
       leftImg: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=1200&q=80',
-      rightImg: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=1200&q=80',
+      rightImg: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
       leftLabel: 'CLOSE UP DETS',
       rightLabel: 'FINAL RENDER'
     }
@@ -61,7 +61,7 @@ export default function SpotlightShowcase() {
   ];
 
   return (
-    <section id="spotlight-showcase" className="py-20 border-t border-zinc-900 bg-[#050505] text-zinc-100">
+    <section className="py-20 border-t border-zinc-900 bg-[#050505] text-zinc-100">
       <div className="container mx-auto px-4 md:px-8 space-y-12">
         
         {/* Main 2-Column Split Grid */}
@@ -71,13 +71,13 @@ export default function SpotlightShowcase() {
           <div className="lg:col-span-4 space-y-8">
             <div className="space-y-1.5">
               <span className="text-accent-orange font-mono text-[10px] uppercase tracking-widest font-bold block">
-                HARD SURFACE PROP
+                EFFECT BREAKDOWN
               </span>
               <h2 className="text-3xl md:text-4xl font-sans font-bold text-white tracking-tight uppercase leading-tight">
                 CYBERPUNK HELMET
               </h2>
               <span className="text-accent-orange text-xs uppercase tracking-wider font-semibold font-sans block">
-                High Detail / Sci-Fi
+                HARD SURFACE PROP
               </span>
             </div>
 
@@ -160,13 +160,16 @@ export default function SpotlightShowcase() {
 
             {/* CTA Button */}
             <div className="pt-2">
-              <a
+              <motion.a
                 href="#portfolio"
-                className="inline-flex items-center gap-2 border border-accent-orange hover:bg-accent-orange/10 text-accent-orange font-mono text-[11px] uppercase tracking-widest font-semibold px-6 py-3 rounded-sm transition-all duration-300"
+                className="inline-flex items-center gap-2 border border-accent-orange text-accent-orange font-mono text-[11px] uppercase tracking-widest font-semibold px-6 py-3 rounded-sm transition-all duration-300"
+                whileHover={{ scale: 1.05, y: -2, backgroundColor: "rgba(242,125,38,0.12)", boxShadow: "0 8px 20px rgba(242,125,38,0.25)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
               >
-                VIEW PROJECT IMAGES
-                <ArrowRight className="w-3.5 h-3.5 text-accent-orange" />
-              </a>
+                VIEW MORE
+                <ArrowRight className="w-3.5 h-3.5 text-accent-orange transition-transform group-hover:translate-x-0.5" />
+              </motion.a>
             </div>
           </div>
 
@@ -218,73 +221,7 @@ export default function SpotlightShowcase() {
           </div>
         </div>
 
-        {/* Bottom Full-Width 3-Column Specifications Area */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10 border-t border-zinc-900 text-zinc-300">
-          
-          {/* Column 1: About Project */}
-          <div className="space-y-3">
-            <h4 className="font-sans font-bold text-white text-xs uppercase tracking-wider flex items-center gap-2">
-              <span className="w-[3px] h-3.5 bg-accent-orange inline-block" />
-              ABOUT THE PROJECT
-            </h4>
-            <p className="text-zinc-400 text-xs leading-relaxed font-sans">
-              The goal of this project was to create a production-ready helmet with high detail and realistic materials suitable for cinematic renders or high-end game assets.
-            </p>
-          </div>
 
-          {/* Column 2: Key Features */}
-          <div className="space-y-3">
-            <h4 className="font-sans font-bold text-white text-xs uppercase tracking-wider">
-              KEY FEATURES
-            </h4>
-            <ul className="space-y-1.5 text-zinc-400 text-xs font-sans list-none">
-              <li className="flex items-start gap-2">
-                <span className="text-accent-orange font-bold mt-0.5">•</span>
-                <span>High quality hard surface modeling</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent-orange font-bold mt-0.5">•</span>
-                <span>PBR textures with realistic wear and tear</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent-orange font-bold mt-0.5">•</span>
-                <span>Optimized topology for production</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent-orange font-bold mt-0.5">•</span>
-                <span>Clean UV layout and efficient texel density</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent-orange font-bold mt-0.5">•</span>
-                <span>Rendered in Marmoset Toolbag 4</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Maps Included */}
-          <div className="space-y-3">
-            <h4 className="font-sans font-bold text-white text-xs uppercase tracking-wider">
-              MAPS INCLUDED
-            </h4>
-            <div className="grid grid-cols-5 gap-2">
-              {textureMaps.map((map) => (
-                <div key={map.name} className="space-y-1.5 text-center group">
-                  <div className="aspect-square rounded-sm overflow-hidden border border-zinc-900 bg-zinc-950">
-                    <img
-                      src={map.url}
-                      alt={map.name}
-                      className="w-full h-full object-cover grayscale transition-all duration-300 group-hover:grayscale-0 group-hover:scale-105"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-                  <div className="text-[9px] font-mono text-zinc-500 font-medium truncate">
-                    {map.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
       </div>
     </section>

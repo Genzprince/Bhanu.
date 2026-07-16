@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import React from 'react';
+import { motion } from 'motion/react';
+import { Sparkles } from 'lucide-react';
 
 interface ToolRole {
   name: string;
@@ -152,146 +152,111 @@ function SoftwareIcon({ iconType, className = "w-6 h-6" }: { iconType: string; c
 }
 
 export default function Workflow() {
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const [hoveredStepIndex, setHoveredStepIndex] = useState<number | null>(null);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-  const displayIndex = hoveredStepIndex !== null ? hoveredStepIndex : activeStepIndex;
-  const currentStep = STEPS[displayIndex];
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
 
   return (
-    <div className="w-full space-y-12">
-      {/* Editorial Split Screen */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-        
-        {/* Left Side: Minimalist Vertical Step Rail (lg:col-span-5) */}
-        <div className="lg:col-span-5 space-y-2 relative">
-          {/* Faint vertical connector line */}
-          <div className="absolute left-6 top-6 bottom-6 w-[1px] bg-zinc-900 pointer-events-none" />
+    <div className="w-full space-y-16">
+      {/* Cards Bento-Inspired Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+      >
+        {STEPS.map((step, idx) => {
+          // Determine if it is the last step so we can make it span across 3 columns for premium highlight spacing
+          const isLastStep = idx === STEPS.length - 1;
 
-          {STEPS.map((step, idx) => {
-            const isSelected = displayIndex === idx;
-            const isSavedActive = activeStepIndex === idx;
-
-            return (
-              <button
-                key={step.number}
-                onClick={() => setActiveStepIndex(idx)}
-                onMouseEnter={() => setHoveredStepIndex(idx)}
-                onMouseLeave={() => setHoveredStepIndex(null)}
-                className="w-full text-left py-4 px-3 flex items-start gap-5 group cursor-pointer transition-all duration-300 rounded-lg relative"
-              >
-                {/* Visual Connector Dot */}
-                <div className="relative z-10 flex items-center justify-center shrink-0 mt-1">
-                  <div
-                    className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all duration-300 bg-[#070707] ${
-                      isSelected
-                        ? 'border-accent-orange text-accent-orange scale-110 shadow-[0_0_8px_rgba(242,125,38,0.2)]'
-                        : isSavedActive
-                        ? 'border-accent-orange/60 text-accent-orange/70'
-                        : 'border-zinc-800 text-zinc-600 group-hover:border-zinc-700 group-hover:text-zinc-400'
-                    }`}
-                  >
-                    <span className="font-mono text-[9px] font-bold">{step.number}</span>
-                  </div>
-                </div>
-
-                {/* Step Metadata & Typography */}
-                <div className="min-w-0 flex-1">
-                  <span
-                    className={`text-[9px] font-mono tracking-widest uppercase font-bold block mb-1.5 transition-colors duration-300 ${
-                      isSelected ? 'text-accent-orange' : 'text-zinc-600'
-                    }`}
-                  >
-                    {step.subtitle}
-                  </span>
-                  <h3
-                    className={`font-sans font-extrabold text-sm md:text-base tracking-wide transition-colors duration-300 ${
-                      isSelected ? 'text-white' : 'text-zinc-400 group-hover:text-zinc-200'
-                    }`}
-                  >
-                    {step.title}
-                  </h3>
-                </div>
-
-                {/* Small indicator caret */}
-                <div className={`mt-1.5 shrink-0 transition-all duration-300 ${isSelected ? 'opacity-100 translate-x-0 text-accent-orange' : 'opacity-0 -translate-x-1'}`}>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Right Side: Clean, High-Contrast Stage details (lg:col-span-7) */}
-        <div className="lg:col-span-7">
-          <AnimatePresence mode="wait">
+          return (
             <motion.div
-              key={currentStep.number}
-              initial={{ opacity: 0, x: 8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -8 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-8 bg-[#0A0A0A] border border-zinc-900/60 p-8 md:p-10 rounded-2xl relative"
+              key={step.number}
+              variants={itemVariants}
+              className={`group relative rounded-2xl bg-[#090909] border border-zinc-900/80 p-6 sm:p-8 flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:border-accent-orange/40 hover:shadow-[0_15px_35px_rgba(242,125,38,0.12)] cursor-pointer overflow-hidden ${
+                isLastStep ? 'md:col-span-2 lg:col-span-3' : ''
+              }`}
             >
-              {/* Large structural number underlay */}
-              <div className="absolute top-4 right-8 font-mono text-8xl font-black text-zinc-900/30 select-none tracking-tighter">
-                {currentStep.number}
-              </div>
+              {/* Soft decorative hover blur light behind the card */}
+              <div className="absolute -inset-px bg-gradient-to-br from-transparent via-transparent to-accent-orange/5 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-700 pointer-events-none" />
 
-              {/* Sub-label */}
-              <div className="space-y-1.5 relative z-10">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-accent-orange/10 border border-accent-orange/20 text-[9px] font-mono font-bold text-accent-orange uppercase tracking-wider">
-                  <Sparkles className="w-2.5 h-2.5" /> PHASE STAGE {currentStep.number}
+              <div>
+                {/* Header: Stage Badge + Number */}
+                <div className="flex justify-between items-start mb-6">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-950 border border-zinc-900 text-[9px] font-mono font-bold text-zinc-500 group-hover:text-accent-orange group-hover:border-accent-orange/20 transition-all duration-300 uppercase tracking-widest">
+                    <Sparkles className="w-2.5 h-2.5" /> STAGE {step.number}
+                  </div>
+                  <span className="font-mono text-3xl font-black text-zinc-800/60 select-none tracking-tighter group-hover:text-accent-orange/20 transition-colors duration-500">
+                    {step.number}
+                  </span>
+                </div>
+
+                {/* Subtitle / Phase Name */}
+                <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase block mb-2 font-bold group-hover:text-accent-orange/70 transition-colors duration-500">
+                  {step.subtitle}
                 </span>
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em] pt-1">
-                  {currentStep.subtitle}
-                </p>
-              </div>
 
-              {/* Title & Description */}
-              <div className="space-y-4 relative z-10">
-                <h3 className="font-sans font-extrabold text-white text-xl md:text-2xl uppercase tracking-wide leading-tight">
-                  {currentStep.title}
+                {/* Title */}
+                <h3 className="text-white font-sans font-extrabold text-base sm:text-lg uppercase tracking-wide mb-3 leading-snug group-hover:text-white transition-colors duration-500">
+                  {step.title}
                 </h3>
-                <p className="text-zinc-400 text-sm md:text-base font-sans leading-relaxed">
-                  {currentStep.description}
+
+                {/* Description */}
+                <p className="text-zinc-400 text-xs sm:text-sm font-sans leading-relaxed mb-6">
+                  {step.description}
                 </p>
               </div>
 
-              {/* Tools aligned with this stage */}
-              <div className="pt-6 border-t border-zinc-900/80 relative z-10 space-y-4">
-                <h4 className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest font-extrabold">
-                  STAGE TOOL ALIGNMENT & UTILITY
-                </h4>
+              {/* Bottom Software Alignment Row */}
+              <div className="pt-5 border-t border-zinc-900/80 mt-auto flex items-center justify-between">
+                <span className="text-[8px] font-mono font-extrabold tracking-widest text-zinc-500 uppercase group-hover:text-zinc-400 transition-colors">
+                  PIPELINE UTILITY
+                </span>
 
-                <div className="space-y-3">
-                  {currentStep.tools.map((tool) => {
+                {/* Inline Software Icons */}
+                <div className="flex items-center gap-2">
+                  {step.tools.map((tool) => {
                     const matchedAllTool = ALL_TOOLS.find((t) => t.id === tool.name);
                     return (
                       <div
                         key={tool.name}
-                        className="flex items-start gap-4 p-4 rounded-xl bg-[#0E0E0E] border border-zinc-900 hover:border-zinc-800 transition-colors"
+                        className="w-8 h-8 rounded-lg bg-zinc-950 border border-zinc-900/80 flex items-center justify-center shrink-0 group-hover:border-zinc-800 transition-colors relative"
+                        title={`${tool.name} — ${tool.role}`}
                       >
-                        <div className="w-10 h-10 rounded-lg bg-[#070707] border border-zinc-900 flex items-center justify-center shrink-0">
-                          {matchedAllTool && <SoftwareIcon iconType={matchedAllTool.iconType} className="w-5.5 h-5.5" />}
-                        </div>
-                        <div className="space-y-0.5 min-w-0">
-                          <span className="font-sans font-black text-white text-xs uppercase tracking-wider block">
-                            {tool.name}
-                          </span>
-                          <span className="text-zinc-400 text-xs font-sans leading-relaxed block">
-                            {tool.role}
-                          </span>
-                        </div>
+                        {matchedAllTool && (
+                          <SoftwareIcon iconType={matchedAllTool.iconType} className="w-4.5 h-4.5" />
+                        )}
+                        {/* Little tooltip style status dot */}
+                        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-accent-orange opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 transition-all duration-500" />
                       </div>
                     );
                   })}
                 </div>
               </div>
             </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
+          );
+        })}
+      </motion.div>
 
       {/* Global Toolset Footer Ribbon - Highly Minimalist */}
       <div className="pt-8 border-t border-zinc-900/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -307,13 +272,16 @@ export default function Workflow() {
         {/* Compact, clean horizontal badge array */}
         <div className="flex flex-wrap items-center gap-2">
           {ALL_TOOLS.map((t) => (
-            <div
+            <motion.div
               key={t.id}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B0B0B] border border-zinc-900 hover:border-zinc-800 transition-colors text-zinc-400 text-xs font-mono font-medium"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B0B0B] border border-zinc-900 text-zinc-400 text-xs font-mono font-medium cursor-pointer group"
+              whileHover={{ scale: 1.05, y: -2, borderColor: "rgba(242,125,38,0.35)", boxShadow: "0 6px 15px rgba(242,125,38,0.08)" }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-              <SoftwareIcon iconType={t.iconType} className="w-4 h-4 shrink-0" />
-              <span>{t.id}</span>
-            </div>
+              <SoftwareIcon iconType={t.iconType} className="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" />
+              <span className="group-hover:text-zinc-200 transition-colors">{t.id}</span>
+            </motion.div>
           ))}
         </div>
       </div>

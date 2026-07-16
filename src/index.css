@@ -30,19 +30,19 @@
   scrollbar-width: none;
 }
 
-/* Infinite Marquee Left-to-Right */
-@keyframes marquee-ltr {
+/* Infinite Marquee Right-to-Left */
+@keyframes marquee-rtl {
   0% {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translate3d(0%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-.animate-marquee-ltr {
+.animate-marquee-rtl {
   display: flex;
   width: max-content;
-  animation: marquee-ltr 28s linear infinite;
+  animation: marquee-rtl 70s linear infinite;
 }
 

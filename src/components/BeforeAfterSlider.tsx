@@ -66,8 +66,11 @@ export default function BeforeAfterSlider({
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         referrerPolicy="no-referrer"
       />
-      <div className="absolute right-6 top-6 bg-black/60 backdrop-blur-md border border-white/5 text-zinc-400 font-mono text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-sm pointer-events-none">
-        {rightLabel}
+      
+      {/* Right HUD Label */}
+      <div className="absolute right-6 top-6 z-20 flex items-center gap-2.5 bg-black/75 backdrop-blur-md border border-white/10 text-white font-mono text-[9px] uppercase tracking-[0.25em] px-4 py-2 rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.5)] pointer-events-none transition-all duration-300">
+        <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+        <span>{rightLabel}</span>
       </div>
 
       {/* Left Image (Overlay Clip) */}
@@ -85,27 +88,36 @@ export default function BeforeAfterSlider({
           />
         </div>
       </div>
-      <div className="absolute left-6 top-6 bg-black/60 backdrop-blur-md border border-white/5 text-zinc-400 font-mono text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-sm pointer-events-none">
-        {leftLabel}
+      
+      {/* Left HUD Label */}
+      <div className="absolute left-6 top-6 z-20 flex items-center gap-2.5 bg-black/75 backdrop-blur-md border border-white/10 text-white font-mono text-[9px] uppercase tracking-[0.25em] px-4 py-2 rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.5)] pointer-events-none transition-all duration-300">
+        <span className="w-1.5 h-1.5 rounded-full bg-accent-orange animate-pulse shadow-[0_0_8px_rgba(242,125,38,1)]" />
+        <span className="text-accent-orange font-bold">{leftLabel}</span>
       </div>
 
       {/* Slider Bar & Handle */}
       <div
-        className="absolute inset-y-0 w-0.5 bg-accent-orange pointer-events-none"
+        className="absolute inset-y-0 w-[2px] bg-gradient-to-b from-accent-orange/30 via-accent-orange to-accent-orange/30 shadow-[0_0_10px_rgba(242,125,38,0.5)] pointer-events-none"
         style={{ left: `${sliderPosition}%` }}
       >
         {/* Glowing floating slider button */}
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-zinc-900 border-2 border-accent-orange shadow-[0_0_15px_rgba(242,125,38,0.4)] flex items-center justify-center cursor-grab active:cursor-grabbing text-accent-orange transition-transform hover:scale-110">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="w-4 h-4"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" className="rotate-90 origin-center" />
-          </svg>
+        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-[#0d0d0d]/95 backdrop-blur-md border-2 border-accent-orange shadow-[0_0_20px_rgba(242,125,38,0.5)] flex items-center justify-center cursor-ew-resize transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(242,125,38,0.7)] group/handle active:scale-95">
+          {/* Inner ring */}
+          <div className="w-7 h-7 rounded-full border border-accent-orange/30 flex items-center justify-center bg-zinc-950/80">
+            {/* Small arrows */}
+            <div className="flex gap-1.5 text-accent-orange items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5 text-accent-orange transition-transform group-hover/handle:-translate-x-0.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5 text-accent-orange transition-transform group-hover/handle:translate-x-0.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </div>
+          </div>
+          
+          {/* Scientific crosshair target indicator dots on top and bottom of handle for 3D UI aesthetic */}
+          <div className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-accent-orange border border-black shadow-[0_0_8px_rgba(242,125,38,1)]" />
+          <div className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-accent-orange border border-black shadow-[0_0_8px_rgba(242,125,38,1)]" />
         </div>
       </div>
     </div>
