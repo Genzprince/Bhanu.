@@ -62,7 +62,7 @@ export default function BeforeAfterSlider({
       {/* Right Image (Base) */}
       <img
         src={rightImage}
-        alt={rightLabel}
+        alt=""
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         referrerPolicy="no-referrer"
       />
@@ -81,9 +81,9 @@ export default function BeforeAfterSlider({
         <div className="absolute inset-0 w-full h-full" style={{ width: containerRef.current?.getBoundingClientRect().width || '100%' }}>
           <img
             src={leftImage}
-            alt={leftLabel}
+            alt=""
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ width: containerRef.current?.getBoundingClientRect().width || '100vw', maxWidth: 'none' }}
+            style={{ width: containerRef.current?.getBoundingClientRect().width || '100%' }}
             referrerPolicy="no-referrer"
           />
         </div>

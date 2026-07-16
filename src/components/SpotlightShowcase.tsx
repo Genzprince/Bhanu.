@@ -177,18 +177,6 @@ export default function SpotlightShowcase() {
           <div className="lg:col-span-8 space-y-5">
             {/* Slider Container with labels overlay */}
             <div className="relative rounded-sm overflow-hidden border border-zinc-900 bg-[#080808]">
-              {/* Top overlay labels */}
-              <div className="absolute top-4 left-4 z-20 bg-black/70 backdrop-blur-md px-3 py-1 border border-zinc-850 rounded-sm">
-                <span className="font-sans text-[10px] font-bold tracking-wider text-white uppercase">
-                  {activeState.leftLabel}
-                </span>
-              </div>
-              <div className="absolute top-4 right-4 z-20 bg-black/70 backdrop-blur-md px-3 py-1 border border-zinc-850 rounded-sm">
-                <span className="font-sans text-[10px] font-bold tracking-wider text-white uppercase">
-                  {activeState.rightLabel}
-                </span>
-              </div>
-
               {/* Slider component */}
               <BeforeAfterSlider
                 leftImage={activeState.leftImg}
