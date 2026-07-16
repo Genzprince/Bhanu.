@@ -35,20 +35,9 @@ import {
   Grid3X3,
   Sliders,
   Paintbrush,
-  ArrowUp
+  ArrowUp,
+  RotateCw
 } from 'lucide-react';
-
-// Maps filter IDs to project IDs
-const FILTER_MAP: Record<string, string[]> = {
-  all: ['cyberpunk_helmet', 'aegis_drone', 'vintage_camera', 'abandoned_station', 'mechanical_keyboard'],
-  hard_surface: ['cyberpunk_helmet', 'aegis_drone'],
-  environment: ['abandoned_station'],
-  product: ['vintage_camera', 'mechanical_keyboard'],
-  props: ['cyberpunk_helmet', 'vintage_camera', 'mechanical_keyboard'],
-  vehicles: ['aegis_drone'],
-  stylized: ['vintage_camera', 'mechanical_keyboard'],
-  realistic: ['cyberpunk_helmet', 'aegis_drone', 'vintage_camera', 'abandoned_station', 'mechanical_keyboard']
-};
 
 export default function App() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
@@ -66,15 +55,21 @@ export default function App() {
 
   // Dynamic filter lists
   const filterCategories = [
-    { id: 'all', label: 'All Projects' },
-    { id: 'hard_surface', label: 'Hard Surface' },
-    { id: 'environment', label: 'Environment' },
-    { id: 'product', label: 'Product Visualization' },
-    { id: 'props', label: 'Props' },
-    { id: 'vehicles', label: 'Vehicles' },
-    { id: 'stylized', label: 'Stylized' },
-    { id: 'realistic', label: 'Realistic' }
+    { id: 'all', label: 'ALL' },
+    { id: 'modeling', label: 'MODELING' },
+    { id: 'uv_unwrap', label: 'UV UNWRAP' },
+    { id: 'texturing', label: 'TEXTURING' },
+    { id: 'rendering', label: 'RENDERING' },
+    { id: 'environment_design', label: 'ENVIRONMENT DESIGN' },
+    { id: 'product_design', label: 'PRODUCT DESIGN' }
   ];
+
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  // Reset visible count when changing filters
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [selectedFilter]);
 
   // Intersection Observer to update active navigation item
   useEffect(() => {
@@ -134,8 +129,7 @@ export default function App() {
 
   // Filtered projects
   const filteredProjects = PROJECTS.filter((project) => {
-    const allowedIds = FILTER_MAP[selectedFilter] || [];
-    return allowedIds.includes(project.id);
+    return selectedFilter === 'all' || project.categoryFilter === selectedFilter;
   });
 
   return (
@@ -289,63 +283,139 @@ export default function App() {
               </div>
             </section>
 
-            {/* FEATURED PROJECTS / GRID SECTION */}
+            {/* PORTFOLIO ARCHIVE / EXPLORE MY WORK SECTION */}
             <section
               id="portfolio"
               ref={portfolioRef}
-              className="py-20 border-t border-zinc-900/40 bg-black"
+              className="py-24 border-t border-zinc-900/40 bg-[#070707]"
             >
-              <div className="container mx-auto px-4 md:px-8 space-y-10">
+              <div className="container mx-auto px-4 md:px-8 space-y-12">
                 {/* Section header */}
-                <div className="flex items-center justify-between pb-6 border-b border-zinc-900">
-                  <h2 className="text-xl md:text-2xl font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                    Featured Projects
-                    <span className="w-2 h-2 rounded-full bg-accent-orange inline-block animate-pulse"></span>
-                  </h2>
-                  <button
-                    onClick={() => handleNavigate('contact')}
-                    className="flex items-center gap-2 font-mono text-xs text-white hover:text-accent-orange uppercase tracking-widest font-semibold transition-colors duration-300 cursor-pointer"
-                  >
-                    View All Projects
-                    <ArrowRight className="w-4 h-4 text-accent-orange" />
-                  </button>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-zinc-900">
+                  <div className="space-y-2">
+                    <span className="text-accent-orange text-xs tracking-widest font-mono uppercase font-bold block">
+                      PORTFOLIO ARCHIVE
+                    </span>
+                    <h2 className="text-3xl md:text-[38px] font-sans font-bold text-white tracking-tight flex items-center gap-2">
+                      EXPLORE MY WORK
+                      <span className="w-2.5 h-2.5 bg-accent-orange rounded-none inline-block"></span>
+                    </h2>
+                  </div>
+                  
+                  {/* Showing project count indicator */}
+                  <div className="flex items-center gap-2 self-start md:self-auto">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-orange animate-pulse" />
+                    <span className="font-mono text-xs text-zinc-500 uppercase tracking-widest">
+                      SHOWING {filteredProjects.length} PROJECTS
+                    </span>
+                  </div>
                 </div>
 
-                {/* Projects Grid of 5 Columns */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-                  {PROJECTS.map((project) => (
-                    <motion.button
-                      key={project.id}
-                      onClick={() => handleProjectSelect(project.id)}
-                      className="group text-left block w-full bg-[#080808] border border-zinc-900 rounded-lg overflow-hidden hover:border-zinc-800 transition-all duration-300 focus:outline-none cursor-pointer"
+                {/* Filter categories container */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {filterCategories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedFilter(category.id)}
+                      className={`font-mono text-xs uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        selectedFilter === category.id
+                          ? 'bg-accent-orange text-white font-bold shadow-[0_0_12px_rgba(242,125,38,0.2)]'
+                          : 'bg-[#0E0E0E] border border-zinc-900 text-zinc-500 hover:text-white hover:border-zinc-800'
+                      }`}
                     >
-                      {/* Card Image */}
-                      <div className="aspect-[4/3] w-full bg-zinc-950 relative overflow-hidden">
-                        <img
-                          src={project.images.beauty}
-                          alt={project.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-102"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-
-                      {/* Card Meta Content */}
-                      <div className="p-4 flex items-center justify-between gap-3 bg-[#050505] border-t border-zinc-900">
-                        <div className="min-w-0">
-                          <h3 className="font-sans font-bold text-white text-sm group-hover:text-accent-orange transition-colors truncate">
-                            {project.title}
-                          </h3>
-                          <p className="text-zinc-500 text-[11px] font-sans mt-0.5 truncate">
-                            {project.category}
-                          </p>
-                        </div>
-                        <div className="w-8 h-8 rounded-full border border-zinc-800/80 flex items-center justify-center bg-zinc-950/40 text-zinc-400 group-hover:text-black group-hover:bg-accent-orange group-hover:border-accent-orange transition-all duration-300 shrink-0">
-                          <ArrowUpRight className="w-4 h-4" />
-                        </div>
-                      </div>
-                    </motion.button>
+                      {category.label}
+                    </button>
                   ))}
                 </div>
+
+                {/* Projects Grid of 3 Columns */}
+                {filteredProjects.length === 0 ? (
+                  <div className="py-20 text-center border border-dashed border-zinc-900 rounded-xl bg-zinc-950/40">
+                    <p className="font-mono text-zinc-500 text-sm">NO PROJECTS CONFIGURED UNDER THIS CATEGORY</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    {filteredProjects.slice(0, visibleCount).map((project) => {
+                      const displaySoftware = project.software || [];
+                      return (
+                        <motion.button
+                          key={project.id}
+                          onClick={() => handleProjectSelect(project.id)}
+                          className="group relative text-left block w-full aspect-[4/3] bg-zinc-950 border border-zinc-900 rounded-xl overflow-hidden hover:border-zinc-800 transition-all duration-500 focus:outline-none cursor-pointer shadow-lg"
+                          whileHover={{ y: -6 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {/* Card Image */}
+                          <div className="absolute inset-0 w-full h-full">
+                            <img
+                              src={project.images.beauty}
+                              alt={project.title}
+                              className="w-full h-full object-cover opacity-45 group-hover:opacity-70 transition-all duration-700 group-hover:scale-103"
+                              referrerPolicy="no-referrer"
+                            />
+                            {/* Subtle vignette/gradient overlays */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/85" />
+                          </div>
+
+                          {/* Card Overlay Content */}
+                          <div className="absolute inset-0 flex flex-col justify-between p-6 z-10">
+                            {/* Top Row: Small Title, Year, Software Badges */}
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="min-w-0">
+                                <span className="font-sans font-semibold text-white/95 text-xs tracking-wide truncate block">
+                                  {project.title}
+                                </span>
+                                <span className="text-[10px] text-zinc-500 font-mono block mt-0.5">
+                                  2026
+                                </span>
+                              </div>
+                              {/* Software badges */}
+                              <div className="flex flex-wrap items-center gap-1.5 justify-end shrink-0 max-w-[60%]">
+                                {displaySoftware.map((sw) => (
+                                  <span
+                                    key={sw}
+                                    className="px-2 py-0.5 text-[8px] font-mono font-bold tracking-wider uppercase bg-black/90 border border-zinc-900 text-zinc-400 rounded-sm"
+                                  >
+                                    {sw}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Bottom Row: Category, Main title, up-right arrow */}
+                            <div className="flex items-end justify-between gap-4">
+                              <div className="min-w-0">
+                                <span className="text-[10px] text-accent-orange font-bold uppercase tracking-widest font-mono block">
+                                  {project.category}
+                                </span>
+                                <h3 className="font-sans font-extrabold text-white text-base md:text-lg group-hover:text-accent-orange transition-colors truncate uppercase tracking-wide mt-1">
+                                  {project.title}
+                                </h3>
+                              </div>
+                              {/* Arrow Button */}
+                              <div className="w-8 h-8 rounded-full border border-zinc-900/85 bg-black/90 flex items-center justify-center text-zinc-400 group-hover:text-black group-hover:bg-accent-orange group-hover:border-accent-orange transition-all duration-300 shrink-0 shadow-md">
+                                <ArrowUpRight className="w-4 h-4" />
+                              </div>
+                            </div>
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Load More Projects */}
+                {filteredProjects.length > visibleCount && (
+                  <div className="flex justify-center pt-8">
+                    <button
+                      onClick={() => setVisibleCount((prev) => prev + 3)}
+                      className="group flex items-center gap-2.5 bg-[#0A0A0A] border border-zinc-900 text-zinc-300 hover:text-white font-mono text-xs uppercase tracking-widest font-bold px-8 py-3.5 rounded-full transition-all duration-300 cursor-pointer hover:border-zinc-800"
+                    >
+                      LOAD MORE PROJECTS
+                      <RotateCw className="w-3.5 h-3.5 text-accent-orange transition-transform group-hover:rotate-180 duration-500" />
+                    </button>
+                  </div>
+                )}
               </div>
             </section>
 
@@ -360,12 +430,13 @@ export default function App() {
             >
               <div className="container mx-auto px-4 md:px-8 space-y-16">
                 {/* Section Header */}
-                <div className="text-left space-y-3 max-w-xl">
-                  <span className="text-accent-orange font-mono text-xs uppercase tracking-widest block font-medium">
-                    Workflow Pipeline
+                <div className="text-left space-y-2">
+                  <span className="text-accent-orange font-mono text-xs uppercase tracking-widest block font-bold">
+                    TECHNICAL PIPELINE
                   </span>
-                  <h2 className="text-3xl md:text-4xl font-sans font-medium tracking-tight text-white uppercase">
-                    My Process<span className="text-accent-orange">.</span>
+                  <h2 className="text-3xl md:text-[38px] font-sans font-bold text-white tracking-tight flex items-center gap-2">
+                    MY WORKFLOW
+                    <span className="w-2.5 h-2.5 bg-accent-orange rounded-none inline-block"></span>
                   </h2>
                 </div>
 
@@ -374,191 +445,151 @@ export default function App() {
               </div>
             </section>
 
-            {/* UNIFIED 3-COLUMN DASHBOARD GRID */}
-            <section className="border-t border-zinc-900 bg-black">
+            {/* UNIFIED 2-COLUMN PREMIUM DASHBOARD GRID */}
+            <section className="border-t border-zinc-900 bg-[#070707]">
               <div className="container mx-auto px-4 md:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-12 lg:gap-y-0">
                   
-                  {/* COLUMN 1: ABOUT ME */}
+                  {/* COLUMN 1: ABOUT ME & PHILOSOPHY (col-span-7) */}
                   <div
                     id="about"
                     ref={aboutRef}
-                    className="py-16 lg:py-20 lg:pr-10 lg:border-r border-zinc-900/60 flex flex-col justify-between"
+                    className="py-16 lg:py-24 lg:pr-16 lg:col-span-7 lg:border-r border-zinc-900/60 flex flex-col justify-between space-y-12"
                   >
-                    <div className="space-y-8">
-                      <h2 className="text-lg md:text-xl font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                        About Me
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-orange inline-block"></span>
-                      </h2>
+                    <div className="space-y-10">
+                      {/* Section Title */}
+                      <div className="space-y-2">
+                        <span className="text-accent-orange font-mono text-xs uppercase tracking-widest block font-bold">
+                          ARTIST PROFILE
+                        </span>
+                        <h2 className="text-3xl md:text-[38px] font-sans font-bold text-white tracking-tight flex items-center gap-2">
+                          ABOUT ME
+                          <span className="w-2.5 h-2.5 bg-accent-orange rounded-none inline-block"></span>
+                        </h2>
+                      </div>
 
-                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                        {/* Portrait image */}
-                        <div className="w-24 h-28 rounded-lg overflow-hidden border border-zinc-900 bg-zinc-950 shrink-0">
-                          <img
-                            src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80"
-                            alt="Bhanu - 3D Artist Profile"
-                            className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-300"
-                            referrerPolicy="no-referrer"
-                          />
+                      {/* Editorial Layout */}
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
+                        {/* Portrait Frame */}
+                        <div className="relative group shrink-0">
+                          <div className="absolute -inset-1.5 bg-accent-orange/15 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <div className="w-32 h-36 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 relative z-10 transition-transform duration-500 group-hover:scale-[1.02]">
+                            <img
+                              src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80"
+                              alt="Bhanu - 3D Artist Profile"
+                              className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700"
+                              referrerPolicy="no-referrer"
+                            />
+                            {/* Subtle dark overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                          </div>
                         </div>
 
-                        {/* Biography text */}
-                        <div className="space-y-3 text-center sm:text-left">
-                          <h3 className="text-white font-sans text-sm font-semibold">
-                            Hi, I'm <span className="text-accent-orange">Bhanu</span>,
+                        {/* Creative Bio Text */}
+                        <div className="space-y-4 text-center sm:text-left">
+                          <h3 className="text-white font-sans text-lg font-extrabold tracking-wide uppercase">
+                            Hi, I'm <span className="text-accent-orange">Bhanu</span>
                           </h3>
-                          <p className="text-zinc-400 text-xs leading-relaxed font-sans">
-                            a passionate 3D Artist specializing in transforming complex concepts into stunning production-ready high-end visuals.
+                          <p className="text-zinc-300 text-sm leading-relaxed font-sans font-medium">
+                            A passionate 3D Artist specializing in hard-surface rendering, complex weathering pipelines, and industrial-grade physical realism.
                           </p>
-                          <p className="text-zinc-500 text-[11px] leading-relaxed font-sans">
-                            I combine technical mastery of topology and texturing with a deep cinematic appreciation for lighting, atmospheric composition, and physical realism.
+                          <p className="text-zinc-500 text-xs leading-relaxed font-sans">
+                            I merge mathematical topology correctness with cinematic storytelling. Every edge weight, procedural micro-abrasion, and volumetric ray of light is directed to transform cold mechanical CAD or complex mesh blueprints into evocative, museum-quality visual experiences.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Specialization Blocks */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
+                        <div className="p-5 rounded-xl bg-[#0B0B0B] border border-zinc-900/80 hover:border-zinc-800 transition-colors">
+                          <span className="text-[10px] font-mono font-bold text-accent-orange uppercase tracking-wider block mb-1">
+                            01 // PHYSICAL FIDELITY
+                          </span>
+                          <h4 className="text-white font-sans text-xs font-bold uppercase tracking-wide mb-1.5">
+                            Sub-D & Hard-Surface Precision
+                          </h4>
+                          <p className="text-zinc-500 text-xs font-sans leading-relaxed">
+                            Meticulous edge flow, optimized low-poly retopology, perfect curvature bevel transitions, and high-density UDIM layout organization.
+                          </p>
+                        </div>
+
+                        <div className="p-5 rounded-xl bg-[#0B0B0B] border border-zinc-900/80 hover:border-zinc-800 transition-colors">
+                          <span className="text-[10px] font-mono font-bold text-accent-orange uppercase tracking-wider block mb-1">
+                            02 // SURFACING ALCHEMY
+                          </span>
+                          <h4 className="text-white font-sans text-xs font-bold uppercase tracking-wide mb-1.5">
+                            Procedural PBR Weathering
+                          </h4>
+                          <p className="text-zinc-500 text-xs font-sans leading-relaxed">
+                            Multi-layered smart materials reflecting real-world age: organic dust accumulation, physical wear, micro-scratches, and realistic moisture.
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Stats row below bio */}
-                    <div className="grid grid-cols-3 gap-2.5 pt-8 border-t border-zinc-950 mt-8">
-                      <div className="p-3.5 rounded-lg bg-[#060606] border border-zinc-900/60 flex flex-col items-center justify-center text-center">
-                        <Box className="w-4 h-4 text-accent-orange mb-1.5" />
-                        <div className="text-xs font-bold text-white font-mono leading-none">50+</div>
-                        <div className="text-[8px] text-zinc-500 font-sans mt-1 leading-tight uppercase tracking-wider">Completed</div>
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 gap-4 pt-8 border-t border-zinc-900">
+                      <div className="p-4 rounded-xl bg-[#090909] border border-zinc-900/60 flex flex-col items-center justify-center text-center group hover:border-accent-orange/20 transition-all duration-300">
+                        <Box className="w-5 h-5 text-accent-orange mb-2 transition-transform group-hover:scale-110" />
+                        <div className="text-lg font-bold text-white font-mono leading-none">50+</div>
+                        <div className="text-[9px] text-zinc-500 font-sans mt-1.5 leading-tight uppercase tracking-wider font-semibold">Completed Assets</div>
                       </div>
 
-                      <div className="p-3.5 rounded-lg bg-[#060606] border border-zinc-900/60 flex flex-col items-center justify-center text-center">
-                        <Star className="w-4 h-4 text-accent-orange mb-1.5" />
-                        <div className="text-xs font-bold text-white font-mono leading-none">6+</div>
-                        <div className="text-[8px] text-zinc-500 font-sans mt-1 leading-tight uppercase tracking-wider">Core Skills</div>
+                      <div className="p-4 rounded-xl bg-[#090909] border border-zinc-900/60 flex flex-col items-center justify-center text-center group hover:border-accent-orange/20 transition-all duration-300">
+                        <Star className="w-5 h-5 text-accent-orange mb-2 transition-transform group-hover:scale-110" />
+                        <div className="text-lg font-bold text-white font-mono leading-none">6+</div>
+                        <div className="text-[9px] text-zinc-500 font-sans mt-1.5 leading-tight uppercase tracking-wider font-semibold">Core Engines</div>
                       </div>
 
-                      <div className="p-3.5 rounded-lg bg-[#060606] border border-zinc-900/60 flex flex-col items-center justify-center text-center">
-                        <Heart className="w-4 h-4 text-accent-orange mb-1.5" />
-                        <div className="text-xs font-bold text-white font-mono leading-none">100%</div>
-                        <div className="text-[8px] text-zinc-500 font-sans mt-1 leading-tight uppercase tracking-wider">Passion</div>
+                      <div className="p-4 rounded-xl bg-[#090909] border border-zinc-900/60 flex flex-col items-center justify-center text-center group hover:border-accent-orange/20 transition-all duration-300">
+                        <Heart className="w-5 h-5 text-accent-orange mb-2 transition-transform group-hover:scale-110" />
+                        <div className="text-lg font-bold text-white font-mono leading-none">100%</div>
+                        <div className="text-[9px] text-zinc-500 font-sans mt-1.5 leading-tight uppercase tracking-wider font-semibold">Production Quality</div>
                       </div>
                     </div>
                   </div>
 
-                  {/* COLUMN 2: SKILLS */}
-                  <div className="py-16 lg:py-20 lg:px-10 lg:border-r border-zinc-900/60 flex flex-col justify-between">
-                    <div>
-                      <h2 className="text-lg md:text-xl font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-sans mb-8">
-                        Skills
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-orange inline-block"></span>
-                      </h2>
-
-                      {/* Animated/Styled Progress Bars */}
-                      <div className="space-y-4">
-                        {[
-                          { name: 'Modeling', percentage: 95, icon: Box },
-                          { name: 'Texturing', percentage: 95, icon: Paintbrush },
-                          { name: 'UV Unwrap', percentage: 90, icon: Grid3X3 },
-                          { name: 'Rendering', percentage: 90, icon: Camera },
-                          { name: 'Lighting', percentage: 85, icon: Sun },
-                          { name: 'Environment Design', percentage: 80, icon: Compass },
-                          { name: 'Product Design', percentage: 80, icon: Layers }
-                        ].map((skill) => {
-                          const SkillIcon = skill.icon;
-                          return (
-                            <div key={skill.name} className="space-y-1.5">
-                              <div className="flex justify-between items-center text-xs font-mono">
-                                <span className="text-zinc-300 flex items-center gap-2">
-                                  <SkillIcon className="w-3.5 h-3.5 text-accent-orange/80" />
-                                  {skill.name}
-                                </span>
-                                <span className="text-zinc-400 font-semibold">{skill.percentage}%</span>
-                              </div>
-                              <div className="h-1 w-full bg-zinc-950 border border-zinc-900/40 rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-accent-orange rounded-full transition-all duration-1000"
-                                  style={{ width: `${skill.percentage}%` }}
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Tools I Use Grid */}
-                    <div className="mt-8 pt-6 border-t border-zinc-950">
-                      <span className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest font-bold mb-3">
-                        Tools I Use
-                      </span>
-                      <div className="flex items-center gap-3">
-                        {/* Blender */}
-                        <div className="w-10 h-10 rounded-lg bg-[#080808] border border-zinc-900/60 flex items-center justify-center hover:border-zinc-700 transition-colors cursor-pointer" title="Blender">
-                          <svg className="w-5 h-5 text-[#E87D0D]" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zm3.8 6a2.2 2.2 0 1 1-2.2 2.2c0-1.2 1-2.2 2.2-2.2zM12 18.2c-3.4 0-6.2-2.8-6.2-6.2 0-3.4 2.8-6.2 6.2-6.2a6.2 6.2 0 0 1 5.4 3.1l-2.2 1.3A3.7 3.7 0 0 0 12 8.3a3.7 3.7 0 1 0 3.1 5.7l2.2 1.3a6.2 6.2 0 0 1-5.3 2.9z" />
-                          </svg>
-                        </div>
-                        {/* Substance Painter */}
-                        <div className="w-10 h-10 rounded-lg bg-[#080808] border border-zinc-900/60 flex items-center justify-center hover:border-zinc-700 transition-colors cursor-pointer" title="Substance Painter">
-                          <div className="w-6 h-6 rounded-md bg-[#D4202C]/10 border border-[#D4202C]/40 flex items-center justify-center text-[#D4202C] font-mono text-xs font-bold">
-                            S
-                          </div>
-                        </div>
-                        {/* Marmoset */}
-                        <div className="w-10 h-10 rounded-lg bg-[#080808] border border-zinc-900/60 flex items-center justify-center hover:border-zinc-700 transition-colors cursor-pointer" title="Marmoset Toolbag">
-                          <svg className="w-5 h-5 text-accent-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5" />
-                            <line x1="12" y1="22" x2="12" y2="12" />
-                            <line x1="12" y1="12" x2="22" y2="8.5" />
-                            <line x1="12" y1="12" x2="2" y2="8.5" />
-                          </svg>
-                        </div>
-                        {/* Photoshop */}
-                        <div className="w-10 h-10 rounded-lg bg-[#080808] border border-zinc-900/60 flex items-center justify-center hover:border-zinc-700 transition-colors cursor-pointer" title="Adobe Photoshop">
-                          <div className="w-6 h-6 rounded-md bg-[#001E36] border border-[#00C8FF]/40 flex items-center justify-center text-[#00C8FF] font-sans text-[11px] font-bold">
-                            Ps
-                          </div>
-                        </div>
-                        {/* Unreal Engine */}
-                        <div className="w-10 h-10 rounded-lg bg-[#080808] border border-zinc-900/60 flex items-center justify-center hover:border-zinc-700 transition-colors cursor-pointer" title="Unreal Engine">
-                          <div className="w-6 h-6 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-white font-sans text-xs font-bold font-serif italic">
-                            U
-                          </div>
-                        </div>
-                        {/* After Effects */}
-                        <div className="w-10 h-10 rounded-lg bg-[#080808] border border-zinc-900/60 flex items-center justify-center hover:border-zinc-700 transition-colors cursor-pointer" title="Adobe After Effects">
-                          <div className="w-6 h-6 rounded-md bg-[#1D002C] border border-[#D12BFF]/40 flex items-center justify-center text-[#D12BFF] font-sans text-[11px] font-bold">
-                            Ae
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* COLUMN 3: LET'S CONNECT */}
+                  {/* COLUMN 2: LET'S CONNECT (col-span-5) */}
                   <div
                     id="contact"
                     ref={contactRef}
-                    className="py-16 lg:py-20 lg:pl-10 flex flex-col justify-between"
+                    className="py-16 lg:py-24 lg:pl-16 lg:col-span-5 flex flex-col justify-between space-y-12"
                   >
-                    <div className="space-y-6">
-                      <h2 className="text-lg md:text-xl font-bold text-white uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                        Let's Connect
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-orange inline-block"></span>
-                      </h2>
+                    <div className="space-y-8">
+                      {/* Section Title */}
+                      <div className="space-y-2">
+                        <span className="text-accent-orange font-mono text-xs uppercase tracking-widest block font-bold">
+                          GET IN TOUCH
+                        </span>
+                        <h2 className="text-3xl md:text-[38px] font-sans font-bold text-white tracking-tight flex items-center gap-2">
+                          LET'S CONNECT
+                          <span className="w-2.5 h-2.5 bg-accent-orange rounded-none inline-block"></span>
+                        </h2>
+                      </div>
 
-                      <p className="text-zinc-500 text-xs leading-relaxed font-sans">
-                        I'm available for freelance work, collaborations and full-time opportunities.
+                      <p className="text-zinc-400 text-sm leading-relaxed font-sans">
+                        I am fully available for selective freelance partnerships, design studio collaborations, and high-end cinematic visualization opportunities globally. Let's realize your vision.
                       </p>
 
-                      <div className="space-y-0.5 font-sans text-xs pt-2">
+                      {/* Connection channels */}
+                      <div className="space-y-2.5 pt-2">
                         {/* Email */}
                         <a
                           href="mailto:bp69356@gmail.com"
-                          className="flex items-center justify-between py-3.5 border-b border-zinc-900/80 text-zinc-400 hover:text-white transition-colors duration-300 group"
+                          className="flex items-center justify-between p-4 rounded-xl bg-[#090909] border border-zinc-900 text-zinc-400 hover:text-white hover:border-accent-orange/30 transition-all duration-300 group"
                         >
-                          <div className="flex items-center gap-3">
-                            <Mail className="w-4 h-4 text-accent-orange" />
-                            <div>
-                              <div className="text-[9px] text-zinc-500 font-mono">Email</div>
-                              <div className="text-zinc-300 font-medium">bp69356@gmail.com</div>
+                          <div className="flex items-center gap-4">
+                            <div className="w-9 h-9 rounded-lg bg-black border border-zinc-900 flex items-center justify-center text-accent-orange shrink-0">
+                              <Mail className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-wider block font-bold">Email Channel</span>
+                              <span className="text-zinc-200 font-sans font-bold text-xs truncate block">bp69356@gmail.com</span>
                             </div>
                           </div>
-                          <ArrowUpRight className="w-4 h-4 text-zinc-600 group-hover:text-accent-orange transition-colors" />
+                          <div className="w-7 h-7 rounded-full border border-zinc-900 bg-black flex items-center justify-center text-zinc-500 group-hover:text-black group-hover:bg-accent-orange group-hover:border-accent-orange transition-all duration-300 shrink-0">
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </div>
                         </a>
 
                         {/* LinkedIn */}
@@ -566,16 +597,20 @@ export default function App() {
                           href="https://linkedin.com/in/bhanu"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-between py-3.5 border-b border-zinc-900/80 text-zinc-400 hover:text-white transition-colors duration-300 group"
+                          className="flex items-center justify-between p-4 rounded-xl bg-[#090909] border border-zinc-900 text-zinc-400 hover:text-white hover:border-accent-orange/30 transition-all duration-300 group"
                         >
-                          <div className="flex items-center gap-3">
-                            <Linkedin className="w-4 h-4 text-accent-orange" />
-                            <div>
-                              <div className="text-[9px] text-zinc-500 font-mono">LinkedIn</div>
-                              <div className="text-zinc-300 font-medium">linkedin.com/in/bhanu</div>
+                          <div className="flex items-center gap-4">
+                            <div className="w-9 h-9 rounded-lg bg-black border border-zinc-900 flex items-center justify-center text-accent-orange shrink-0">
+                              <Linkedin className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-wider block font-bold">LinkedIn Network</span>
+                              <span className="text-zinc-200 font-sans font-bold text-xs truncate block">linkedin.com/in/bhanu</span>
                             </div>
                           </div>
-                          <ArrowUpRight className="w-4 h-4 text-zinc-600 group-hover:text-accent-orange transition-colors" />
+                          <div className="w-7 h-7 rounded-full border border-zinc-900 bg-black flex items-center justify-center text-zinc-500 group-hover:text-black group-hover:bg-accent-orange group-hover:border-accent-orange transition-all duration-300 shrink-0">
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </div>
                         </a>
 
                         {/* ArtStation */}
@@ -583,16 +618,20 @@ export default function App() {
                           href="https://artstation.com/bhanu"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-between py-3.5 border-b border-zinc-900/80 text-zinc-400 hover:text-white transition-colors duration-300 group"
+                          className="flex items-center justify-between p-4 rounded-xl bg-[#090909] border border-zinc-900 text-zinc-400 hover:text-white hover:border-accent-orange/30 transition-all duration-300 group"
                         >
-                          <div className="flex items-center gap-3">
-                            <Gamepad2 className="w-4 h-4 text-accent-orange" />
-                            <div>
-                              <div className="text-[9px] text-zinc-500 font-mono">ArtStation</div>
-                              <div className="text-zinc-300 font-medium">artstation.com/bhanu</div>
+                          <div className="flex items-center gap-4">
+                            <div className="w-9 h-9 rounded-lg bg-black border border-zinc-900 flex items-center justify-center text-accent-orange shrink-0">
+                              <Gamepad2 className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-wider block font-bold">ArtStation Portfolio</span>
+                              <span className="text-zinc-200 font-sans font-bold text-xs truncate block">artstation.com/bhanu</span>
                             </div>
                           </div>
-                          <ArrowUpRight className="w-4 h-4 text-zinc-600 group-hover:text-accent-orange transition-colors" />
+                          <div className="w-7 h-7 rounded-full border border-zinc-900 bg-black flex items-center justify-center text-zinc-500 group-hover:text-black group-hover:bg-accent-orange group-hover:border-accent-orange transition-all duration-300 shrink-0">
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </div>
                         </a>
 
                         {/* Behance */}
@@ -600,23 +639,27 @@ export default function App() {
                           href="https://behance.net/bhanu"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-between py-3.5 border-b border-zinc-900/80 text-zinc-400 hover:text-white transition-colors duration-300 group"
+                          className="flex items-center justify-between p-4 rounded-xl bg-[#090909] border border-zinc-900 text-zinc-400 hover:text-white hover:border-accent-orange/30 transition-all duration-300 group"
                         >
-                          <div className="flex items-center gap-3">
-                            <Briefcase className="w-4 h-4 text-accent-orange" />
-                            <div>
-                              <div className="text-[9px] text-zinc-500 font-mono">Behance</div>
-                              <div className="text-zinc-300 font-medium">behance.net/bhanu</div>
+                          <div className="flex items-center gap-4">
+                            <div className="w-9 h-9 rounded-lg bg-black border border-zinc-900 flex items-center justify-center text-accent-orange shrink-0">
+                              <Briefcase className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[9px] text-zinc-500 font-mono uppercase tracking-wider block font-bold">Behance Gallery</span>
+                              <span className="text-zinc-200 font-sans font-bold text-xs truncate block">behance.net/bhanu</span>
                             </div>
                           </div>
-                          <ArrowUpRight className="w-4 h-4 text-zinc-600 group-hover:text-accent-orange transition-colors" />
+                          <div className="w-7 h-7 rounded-full border border-zinc-900 bg-black flex items-center justify-center text-zinc-500 group-hover:text-black group-hover:bg-accent-orange group-hover:border-accent-orange transition-all duration-300 shrink-0">
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </div>
                         </a>
                       </div>
                     </div>
 
-                    <button className="w-full mt-6 py-3 border border-zinc-900 hover:border-accent-orange/60 hover:bg-accent-orange/5 text-zinc-300 hover:text-white rounded-lg font-mono text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer group">
+                    <button className="w-full py-4 bg-zinc-950 border border-zinc-900 hover:border-accent-orange/40 hover:bg-accent-orange/5 text-zinc-300 hover:text-white rounded-xl font-mono text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2.5 transition-all duration-300 cursor-pointer group shadow-lg">
                       <Download className="w-4 h-4 text-accent-orange group-hover:scale-110 transition-transform" />
-                      Download Resume
+                      Download Creative Resume
                     </button>
                   </div>
 

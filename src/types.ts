@@ -10,7 +10,7 @@ export interface Project {
   id: string;
   title: string;
   category: string;
-  categoryFilter: 'hard_surface' | 'environment' | 'product' | 'props' | 'vehicles' | 'stylized' | 'realistic';
+  categoryFilter: 'hard_surface' | 'environment' | 'product' | 'props' | 'vehicles' | 'stylized' | 'realistic' | 'modeling' | 'uv_unwrap' | 'texturing' | 'rendering' | 'environment_design' | 'product_design' | string;
   software: string[];
   polygons: string;
   textureSize: string;
