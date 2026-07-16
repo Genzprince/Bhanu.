@@ -1,0 +1,6 @@
+{
+  "name": "Bhanu - 3D Artist Portfolio",
+  "description": "Studio-quality portfolio of Bhanu, a 3D Artist specializing in production-ready 3D assets, cinematic visuals, and case studies.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
